@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserSessionRepo extends JpaRepository<UserSession, Integer> {
     boolean existsByToken(String token);
+    UserSession getUserSessionByToken(String token);
 }
