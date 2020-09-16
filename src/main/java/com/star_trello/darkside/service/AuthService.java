@@ -1,5 +1,6 @@
 package com.star_trello.darkside.service;
 
+import com.star_trello.darkside.dto.UserCredentialsDto;
 import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.model.UserSession;
 import com.star_trello.darkside.repo.UserRepo;
@@ -19,8 +20,11 @@ public class AuthService {
     UserSessionService userSessionService;
 
     @Transactional
-    public ResponseEntity<?> login(User user) {
-        User loginUser = userRepo.getUserByEmailAndPassword(user.getEmail(), encodePassword(user.getPassword()));
+    public ResponseEntity<?> login(UserCredentialsDto userCredentials) {
+        User loginUser = userRepo.getUserByEmailAndPassword(
+                userCredentials.getEmail(),
+                encodePassword(userCredentials.getPassword())
+        );
 
         if (loginUser == null) {
             return badRequest("Invalid email or password");
