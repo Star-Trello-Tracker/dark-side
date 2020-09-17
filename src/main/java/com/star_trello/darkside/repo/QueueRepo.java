@@ -23,4 +23,11 @@ public interface QueueRepo extends JpaRepository<Queue, Integer> {
         return getByTitle(title).getTaskList();
     }
 
+    default Queue getQueueInfo(String title) {
+        Queue queue = getByTitle(title);
+        queue.setCreator(null);
+
+        return queue;
+    }
+
 }
