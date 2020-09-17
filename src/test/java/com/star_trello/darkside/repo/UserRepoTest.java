@@ -1,6 +1,5 @@
 package com.star_trello.darkside.repo;
 
-import com.star_trello.darkside.constants.UserTestConstants;
 import com.star_trello.darkside.model.User;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.star_trello.darkside.constants.UserTestConstants.USERNAME;
+import static com.star_trello.darkside.constants.UserTestConstants.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -29,34 +28,34 @@ class UserRepoTest {
     public void setUp() {
         userRepo.save(
                 User.builder()
-                        .email(UserTestConstants.MAIL)
+                        .email(MAIL)
                         .username(USERNAME)
-                        .password(UserTestConstants.PASSWORD)
+                        .password(PASSWORD)
                         .build()
         );
     }
 
     @Test
     void existsUserByEmailOrUsername() {
-        Assert.assertTrue(userRepo.existsUserByEmailOrUsername(UserTestConstants.MAIL, USERNAME));
+        Assert.assertTrue(userRepo.existsUserByEmailOrUsername(MAIL, USERNAME));
     }
 
     @Test
     void getUserIdByEmail() {
-        User user = userRepo.getUserByEmailAndPassword(UserTestConstants.MAIL, UserTestConstants.PASSWORD);
-        Assert.assertEquals(user.getId(), userRepo.getUserIdByEmail(UserTestConstants.MAIL).getId());
+        User user = userRepo.getUserByEmailAndPassword(MAIL, PASSWORD);
+        Assert.assertEquals(user.getId(), userRepo.getUserIdByEmail(MAIL).getId());
     }
 
     @Test
     void getUserById() {
-        User user = userRepo.getUserByEmailAndPassword(UserTestConstants.MAIL, UserTestConstants.PASSWORD);
+        User user = userRepo.getUserByEmailAndPassword(MAIL, PASSWORD);
         Assert.assertEquals(user, userRepo.getUserById(user.getId()));
     }
 
     @Test
     void getUserByEmailAndPassword() {
-        User user = userRepo.getUserById(userRepo.getUserIdByEmail(UserTestConstants.MAIL).getId());
-        Assert.assertEquals(user, userRepo.getUserByEmailAndPassword(UserTestConstants.MAIL, UserTestConstants.PASSWORD));
+        User user = userRepo.getUserById(userRepo.getUserIdByEmail(MAIL).getId());
+        Assert.assertEquals(user, userRepo.getUserByEmailAndPassword(MAIL, PASSWORD));
     }
 
     @Test
