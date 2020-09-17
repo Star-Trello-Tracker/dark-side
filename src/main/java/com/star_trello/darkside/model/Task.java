@@ -1,20 +1,38 @@
 package com.star_trello.darkside.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    private String key;
+    private String title;
+    private String description;
+
+    private TaskPriority priority;
+    private TaskStatus status;
+
+    @ManyToOne
+    private User creator;
+    @ManyToOne
+    private User assignee;
+    @ManyToMany
+    private List<User> observers;
+
+    @OneToMany
+    private List<Comment> comments;
+
+    private LocalDateTime refreshed;
 }
