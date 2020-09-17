@@ -4,6 +4,7 @@ import com.star_trello.darkside.dto.EditingProfileDto;
 import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +21,10 @@ public class UserService {
     }
 
     public ResponseEntity<?> updateUserProfile(String token, EditingProfileDto editingProfile) {
-
         User user = userSessionService.getUserByToken(token);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
         user.setName(editingProfile.getName());
         user.setSurname(editingProfile.getSurname());
         user.setTgUsername(editingProfile.getTgUsername());

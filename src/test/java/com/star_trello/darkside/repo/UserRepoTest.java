@@ -12,6 +12,10 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
+import static com.star_trello.darkside.constants.UserTestConstants.USERNAME;
+
 @RunWith(SpringRunner.class)
 @DataJpaTest
 class UserRepoTest {
@@ -26,7 +30,7 @@ class UserRepoTest {
         userRepo.save(
                 User.builder()
                         .email(UserTestConstants.MAIL)
-                        .username(UserTestConstants.USERNAME)
+                        .username(USERNAME)
                         .password(UserTestConstants.PASSWORD)
                         .build()
         );
@@ -34,7 +38,7 @@ class UserRepoTest {
 
     @Test
     void existsUserByEmailOrUsername() {
-        Assert.assertTrue(userRepo.existsUserByEmailOrUsername(UserTestConstants.MAIL, UserTestConstants.USERNAME));
+        Assert.assertTrue(userRepo.existsUserByEmailOrUsername(UserTestConstants.MAIL, USERNAME));
     }
 
     @Test
@@ -53,5 +57,12 @@ class UserRepoTest {
     void getUserByEmailAndPassword() {
         User user = userRepo.getUserById(userRepo.getUserIdByEmail(UserTestConstants.MAIL).getId());
         Assert.assertEquals(user, userRepo.getUserByEmailAndPassword(UserTestConstants.MAIL, UserTestConstants.PASSWORD));
+    }
+
+    @Test
+    void getAllUsernames() {
+        List<String> allUsernames = userRepo.getAllUsernames();
+        Assert.assertEquals(1, allUsernames.size());
+        Assert.assertEquals(USERNAME, allUsernames.get(0));
     }
 }

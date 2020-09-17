@@ -19,7 +19,7 @@ public class UserController {
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<?> updateUserProfile(@RequestHeader String token,
+    public ResponseEntity<?> updateUserProfile(@RequestHeader("Authorization") String token,
                                                @RequestBody EditingProfileDto editingProfile) {
         return userService.updateUserProfile(token, editingProfile);
     }
