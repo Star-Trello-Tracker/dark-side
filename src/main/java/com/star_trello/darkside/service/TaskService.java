@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 @Service
 public class TaskService {
@@ -44,6 +45,7 @@ public class TaskService {
                 .status(TaskStatus.OPEN)
                 .comments(new ArrayList<>())
                 .observers(new ArrayList<>())
+                .calledUsers(new ArrayList<>())
                 .refreshed(System.currentTimeMillis())
                 .build();
         queue.getTaskList().add(task);

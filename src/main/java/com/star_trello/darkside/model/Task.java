@@ -31,6 +31,8 @@ public class Task {
     private User assignee;
     @ManyToMany
     private List<User> observers;
+    @ManyToMany
+    private List<User> calledUsers;
 
     @OneToMany
     private List<Comment> comments;
