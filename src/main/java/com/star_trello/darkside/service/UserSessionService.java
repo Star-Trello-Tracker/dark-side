@@ -56,13 +56,10 @@ public class UserSessionService {
     }
 
     @Transactional
-    public User getUserByToken(UserSession userSession) {
-        boolean isAuth = userSessionRepo.existsByToken(userSession.getToken());
-
-        if (isAuth) {
-            return null;
+    public User getUserByToken(String token) {
+        if (userSessionRepo.existsByToken(token)) {
+            return userService.getUserById(userSessionRepo.getUserSessionByToken(token).getUserId());
         }
-
-        return userService.getUserById(userSession.getUserId());
+        return null;
     }
 }
