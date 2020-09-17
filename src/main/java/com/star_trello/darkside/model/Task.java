@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Data
 @Entity
@@ -22,9 +19,16 @@ public class Task {
 
     private String description;
 
-    private int userId;
-
-    private int queueId;
-
     private int priority;
+
+    @ManyToOne
+    private User creator;
+
+    @OneToOne
+    private User asignee;
+
+    private List<User> observers;
+
+    private List<User> needAnswer;
+
 }
