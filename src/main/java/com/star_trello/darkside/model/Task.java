@@ -3,6 +3,7 @@ package com.star_trello.darkside.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,5 +35,5 @@ public class Task {
     @OneToMany
     private List<Comment> comments;
 
-    private LocalDateTime refreshed;
+    private long refreshed;
 }
