@@ -15,7 +15,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserData(@PathVariable Integer id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+        return userService.getUserByIdWrapper(id);
     }
 
     @PostMapping("/edit")

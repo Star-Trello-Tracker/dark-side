@@ -20,6 +20,15 @@ public class UserService {
         return userRepo.getUserById(id);
     }
 
+    public ResponseEntity<?> getUserByIdWrapper(int id) {
+        User user = getUserById(id);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(user);
+    }
+
     public ResponseEntity<?> updateUserProfile(String token, EditingProfileDto editingProfile) {
         User user = userSessionService.getUserByToken(token);
         if (user == null) {
