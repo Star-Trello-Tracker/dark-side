@@ -1,10 +1,7 @@
 package com.star_trello.darkside;
 
 import com.star_trello.darkside.controller.*;
-import com.star_trello.darkside.dto.CommentCreationDto;
-import com.star_trello.darkside.dto.QueueCreationDto;
-import com.star_trello.darkside.dto.TaskCreationDto;
-import com.star_trello.darkside.dto.UserCredentialsDto;
+import com.star_trello.darkside.dto.*;
 import com.star_trello.darkside.model.*;
 import com.star_trello.darkside.repo.QueueRepo;
 import com.star_trello.darkside.repo.UserRepo;
@@ -51,7 +48,7 @@ class DarkSideApplicationTests {
     }
 
     @Test
-    void fullCycleUserAuthCreateQueueTaskComment() {
+    void fullCycleUserAuthCreateQueueTaskCommentCreation() {
         authController.register(User.builder()
                 .email(MAIL)
                 .username(USERNAME)
@@ -85,7 +82,7 @@ class DarkSideApplicationTests {
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(COMMENT_TEXT, queue.getTaskList().get(0).getComments().get(0).getText());
 
-        commentController.editComment(comment.getId(), EDIT_COMMENT, token);
+        commentController.editComment(comment.getId(), new TextDto(EDIT_COMMENT), token);
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(EDIT_COMMENT, queue.getTaskList().get(0).getComments().get(0).getText());
 
