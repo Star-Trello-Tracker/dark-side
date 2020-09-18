@@ -43,4 +43,11 @@ public class TaskController {
                                               @RequestHeader("Authorization") String token) {
         return taskService.changeTaskDescription(token, taskId, description);
     }
+
+    @PostMapping("/{taskId}/assign")
+    public ResponseEntity<?> assignUser(@PathVariable int taskId,
+                                                   @RequestBody String username,
+                                                   @RequestHeader("Authorization") String token) {
+        return taskService.assignUser(token, taskId, username);
+    }
 }
