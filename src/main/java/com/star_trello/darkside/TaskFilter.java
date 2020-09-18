@@ -1,10 +1,10 @@
 package com.star_trello.darkside;
 
-
-import com.star_trello.darkside.model.User;
-import com.star_trello.darkside.repo.UserSessionRepo;
+import com.star_trello.darkside.model.Task;
+import com.star_trello.darkside.repo.TaskRepo;
 import com.star_trello.darkside.service.UserSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -15,10 +15,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class SimpleFilter extends OncePerRequestFilter {
+public class TaskFilter extends OncePerRequestFilter {
 
     @Autowired
-    UserSessionRepo userSessionRepo;
+    TaskRepo taskRepo;
 
     @Autowired
     UserSessionService userSessionService;
@@ -29,13 +29,13 @@ public class SimpleFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
         System.out.println(path);
-        if (!path.equals("/register") && !path.equals("/login")) {
-            String token = request.getHeader("Authorization");
-            if (!userSessionRepo.existsByToken(token)) {
-                response.sendError(401);
+        if (path.contains("/change")) {
+            int taskId = Integer.parseInt(path.split("/")[2]);
+            if (!taskRepo.existsById(taskId)) {
+                response.sendError(HttpStatus.NOT_FOUND.value());
             }
-            User user = userSessionService.getUserByToken(token);
-            request.setAttribute("user", user);
+            Task task = taskRepo.getById(taskId);
+            request.setAttribute("task", task);
         }
 
 

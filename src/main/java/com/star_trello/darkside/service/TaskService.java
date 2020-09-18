@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Stack;
 
 @Service
 public class TaskService {
@@ -26,18 +25,15 @@ public class TaskService {
     UserSessionRepo userSessionRepo;
 
     @Transactional
-    public ResponseEntity<?> createTask(String token, TaskCreationDto request) {
-        User creator = userSessionService.getUserByToken(token);
-        if (creator == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
+    public ResponseEntity<?> createTask(User user, TaskCreationDto request) {
+
         if (!queueRepo.existsByTitle(request.getQueueTitle())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(request.getQueueTitle() + " queue doesn't exist.");
         }
         Queue queue = queueRepo.getByTitle(request.getQueueTitle());
         String key = queue.getTitle() + "-" + (queue.getTaskList().size() + 1);
         Task task = Task.builder()
-                .creator(creator)
+                .creator(user)
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .key(key)
@@ -54,25 +50,12 @@ public class TaskService {
         return ResponseEntity.ok().body(task);
     }
 
-    public ResponseEntity<?> getTaskById(String token, int taskId) {
-        if (!userSessionRepo.existsByToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
-        }
+    public ResponseEntity<?> getTaskById(int taskId) {
         return ResponseEntity.ok().body(taskRepo.findById(taskId));
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskPriority(String token, int taskId, int priorityCode) {
-        if (!userSessionRepo.existsByToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
-        }
-        Task task = taskRepo.getById(taskId);
+    public ResponseEntity<?> changeTaskPriority(Task task, int priorityCode) {
         task.setPriority(TaskPriority.findPriorityByCode(priorityCode));
         task.setRefreshed(System.currentTimeMillis());
         taskRepo.save(task);
@@ -80,14 +63,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskStatus(String token, int taskId, int statusCode) {
-        if (!userSessionRepo.existsByToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
-        }
-        Task task = taskRepo.getById(taskId);
+    public ResponseEntity<?> changeTaskStatus(Task task, int statusCode) {
         task.setStatus(TaskStatus.findStatusByCode(statusCode));
         task.setRefreshed(System.currentTimeMillis());
         taskRepo.save(task);
@@ -95,14 +71,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskDescription(String token, int taskId, String description) {
-        if (!userSessionRepo.existsByToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
-        }
-        Task task = taskRepo.getById(taskId);
+    public ResponseEntity<?> changeTaskDescription(Task task, String description) {
         task.setDescription(description);
         task.setRefreshed(System.currentTimeMillis());
         taskRepo.save(task);
