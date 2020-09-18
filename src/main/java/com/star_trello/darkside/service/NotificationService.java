@@ -44,6 +44,7 @@ public class NotificationService {
         return ResponseEntity.ok(notificationRepo.getAllByCalledUser(creator));
     }
 
+    @Transactional
     public ResponseEntity<?> deleteNotification(String token, int notificationId) {
         User calledUser = userSessionService.getUserByToken(token);
         if (calledUser == null) {

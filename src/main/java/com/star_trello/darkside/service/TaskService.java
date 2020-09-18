@@ -130,6 +130,7 @@ public class TaskService {
         return ResponseEntity.ok("Description changed successfully");
     }
 
+    @Transactional
     public ResponseEntity<?> assignUser(String token, int taskId, String username) {
         User initiator = userSessionService.getUserByToken(token);
         if (initiator == null) {
