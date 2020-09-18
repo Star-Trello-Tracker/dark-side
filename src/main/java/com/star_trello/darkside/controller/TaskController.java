@@ -2,6 +2,7 @@ package com.star_trello.darkside.controller;
 
 import com.star_trello.darkside.dto.CodeDto;
 import com.star_trello.darkside.dto.TaskCreationDto;
+import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,9 @@ public class TaskController {
     TaskService taskService;
 
     @PostMapping("")
-    public ResponseEntity<?> createTask(@RequestBody TaskCreationDto request, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> createTask(@RequestAttribute("key") User user,
+                                            @RequestBody TaskCreationDto request, @RequestHeader("Authorization") String token) {
+        System.out.println(user);
         return taskService.createTask(token, request);
     }
 
