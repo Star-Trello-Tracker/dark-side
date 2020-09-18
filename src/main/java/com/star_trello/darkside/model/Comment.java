@@ -1,20 +1,31 @@
 package com.star_trello.darkside.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Builder
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+
+    @ManyToOne
+    private User creator;
+
+    private String text;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<User> whoCalled;
+
+    private long created;
+
+    @ManyToOne
+    private Task task;
 }

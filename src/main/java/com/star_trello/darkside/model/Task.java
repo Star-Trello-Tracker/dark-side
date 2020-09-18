@@ -3,8 +3,6 @@ package com.star_trello.darkside.model;
 import lombok.*;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -34,7 +32,7 @@ public class Task {
     @ManyToMany
     private List<User> calledUsers;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     private List<Comment> comments;
 
     private long refreshed;

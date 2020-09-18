@@ -22,7 +22,7 @@ public class Queue {
     @ManyToOne
     private User creator;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.EAGER)
     List<Task> taskList;
 
 }

@@ -20,4 +20,6 @@ public interface UserRepo extends JpaRepository<User, Integer> {
     default List<String> getAllUsernames() {
         return findAll().stream().map(User::getUsername).collect(Collectors.toList());
     }
+
+    User getUserByUsername(String username);
 }
