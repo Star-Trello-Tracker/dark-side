@@ -18,9 +18,9 @@ public class TaskController {
         return taskService.createTask(token, request);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getTaskById(@PathVariable int id, @RequestHeader("Authorization") String token) {
-        return taskService.getTaskById(token, id);
+    @GetMapping("/{key}")
+    public ResponseEntity<?> getTaskById(@PathVariable String key, @RequestHeader("Authorization") String token) {
+        return taskService.getTaskById(token, key);
     }
 
     @PostMapping("/{taskId}/priority/change")

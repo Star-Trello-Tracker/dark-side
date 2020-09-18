@@ -50,4 +50,9 @@ public class UserService {
     public ResponseEntity<?> getAllUsernames() {
         return ResponseEntity.ok(userRepo.getAllUsernames());
     }
+
+    @Transactional
+    public ResponseEntity<?> getAllNamesAndUsernames() {
+        return ResponseEntity.ok(userRepo.getAllNamesAndUsernames());
+    }
 }

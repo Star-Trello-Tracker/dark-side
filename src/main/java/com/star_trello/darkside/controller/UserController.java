@@ -28,4 +28,7 @@ public class UserController {
     public ResponseEntity<?> getAllUserNames() {
         return userService.getAllUsernames();
     }
+
+    @GetMapping("/fullnames")
+    public ResponseEntity<?> getAllNamesAndUsernames() { return userService.getAllNamesAndUsernames(); }
 }

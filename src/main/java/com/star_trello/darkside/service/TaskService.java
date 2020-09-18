@@ -60,14 +60,16 @@ public class TaskService {
         return ResponseEntity.ok().body(task);
     }
 
-    public ResponseEntity<?> getTaskById(String token, int taskId) {
+    public ResponseEntity<?> getTaskById(String token, String key) {
         if (!userSessionRepo.existsByToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
         }
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
+
+        Task task = taskRepo.getByKey(key);
+        if (task == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + key + " doesn't exist.");
         }
-        return ResponseEntity.ok().body(taskRepo.findById(taskId));
+        return ResponseEntity.ok().body(task);
     }
 
     @Transactional
@@ -87,7 +89,7 @@ public class TaskService {
         task.setRefreshed(System.currentTimeMillis());
         notificationService.createNotification(task, task.getObservers(), initiator, NotificationType.TASK_PRIORITY_UPDATED);
         taskRepo.save(task);
-        return ResponseEntity.ok("Priority changed successfully");
+        return ResponseEntity.ok().build();
     }
 
     @Transactional
@@ -107,7 +109,7 @@ public class TaskService {
         task.setRefreshed(System.currentTimeMillis());
         notificationService.createNotification(task, task.getObservers(), initiator, NotificationType.TASK_STATUS_UPDATED);
         taskRepo.save(task);
-        return ResponseEntity.ok("Status changed successfully");
+        return ResponseEntity.ok().build();
     }
 
     @Transactional
@@ -127,7 +129,7 @@ public class TaskService {
         task.setRefreshed(System.currentTimeMillis());
         notificationService.createNotification(task, task.getObservers(), initiator, NotificationType.TASK_DESCRIPTION_UPDATED);
         taskRepo.save(task);
-        return ResponseEntity.ok("Description changed successfully");
+        return ResponseEntity.ok().build();
     }
 
     @Transactional

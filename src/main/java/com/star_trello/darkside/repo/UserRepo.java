@@ -22,4 +22,11 @@ public interface UserRepo extends JpaRepository<User, Integer> {
     }
 
     User getUserByUsername(String username);
+
+    default List<String[]> getAllNamesAndUsernames() {
+        return findAll().stream().map(user -> new String[]{ user.getUsername(),
+                user.getName(),
+                user.getSurname()
+        }).collect(Collectors.toList());
+    }
 }
