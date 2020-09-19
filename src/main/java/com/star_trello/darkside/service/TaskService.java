@@ -104,9 +104,7 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setPriority(TaskPriority.findPriorityByCode(priorityCode));
-        task.setRefreshed(System.currentTimeMillis());
-        notificationService.createNotification(task, task.getObservers(), initiator, NotificationType.TASK_PRIORITY_UPDATED);
-        taskRepo.save(task);
+        changeTaskCommonLogic(initiator, task, NotificationType.TASK_PRIORITY_UPDATED);
         return ResponseEntity.ok().build();
     }
 
@@ -116,9 +114,7 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setStatus(TaskStatus.findStatusByCode(statusCode));
-        task.setRefreshed(System.currentTimeMillis());
-        notificationService.createNotification(task, task.getObservers(), initiator, NotificationType.TASK_STATUS_UPDATED);
-        taskRepo.save(task);
+        changeTaskCommonLogic(initiator, task, NotificationType.TASK_STATUS_UPDATED);
         return ResponseEntity.ok().build();
     }
 
@@ -128,9 +124,7 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setTitle(title);
-        task.setRefreshed(System.currentTimeMillis());
-        notificationService.createNotification(task, task.getObservers(), initiator, NotificationType.TASK_TITLE_UPDATED);
-        taskRepo.save(task);
+        changeTaskCommonLogic(initiator, task, NotificationType.TASK_TITLE_UPDATED);
         return ResponseEntity.ok().build();
     }
 
@@ -140,9 +134,7 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setDescription(description);
-        task.setRefreshed(System.currentTimeMillis());
-        notificationService.createNotification(task, task.getObservers(), initiator, NotificationType.TASK_DESCRIPTION_UPDATED);
-        taskRepo.save(task);
+        changeTaskCommonLogic(initiator, task, NotificationType.TASK_DESCRIPTION_UPDATED);
         return ResponseEntity.ok().build();
     }
 
@@ -174,5 +166,11 @@ public class TaskService {
         task.getObservers().add(initiator);
         taskRepo.save(task);
         return ResponseEntity.ok().build();
+    }
+
+    private void changeTaskCommonLogic(User initiator, Task task, NotificationType type) {
+        task.setRefreshed(System.currentTimeMillis());
+        notificationService.createNotification(task, task.getObservers(), initiator, type);
+        taskRepo.save(task);
     }
 }
