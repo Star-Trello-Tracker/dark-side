@@ -51,6 +51,7 @@ public class CommentService {
                 .build();
 
         commentRepo.save(comment);
+        commentRepo.flush();
         task.getComments().add(comment);
         taskRepo.save(task);
 
