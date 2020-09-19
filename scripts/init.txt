@@ -1,0 +1,32 @@
+#!/bin/bash
+
+curl --location --request POST 'http://localhost:8080/api/register' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+ "email":"1",
+ "password":"1"
+}'
+
+res=$(curl --location --request POST 'http://localhost:8080/api/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+ "email":"1",
+ "password":"1"
+}')
+
+token=$(echo $res | grep -o '"token":"[^"]*' | cut -d'"' -f4)
+
+curl --location --request POST 'http://localhost:8080/api/queues' \
+--header "Authorization: ${token//[$'\t\r\n ']}" \
+--header 'Content-Type: application/json' \
+--data-raw '{"title": "FRONT", "description": "Front tasks"}'
+
+curl --location --request POST 'http://localhost:8080/api/tasks/' \
+--header "Authorization: ${token//[$'\t\r\n ']}" \
+--header 'Content-Type: application/json' \
+--data-raw '{"title": "Create table", "description": "Create task table", "queueTitle": "FRONT", "priorityCode": 1, "observers":[]}'
+
+
+curl --location --request GET 'http://localhost:8080/api/queues/FRONT' \
+--header "Authorization: ${token//[$'\t\r\n ']}" \
+--header 'Content-Type: application/json'
