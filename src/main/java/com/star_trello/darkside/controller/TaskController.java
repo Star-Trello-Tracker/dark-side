@@ -22,9 +22,9 @@ public class TaskController {
         return taskService.createTask(user, request);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getTaskById(@PathVariable int id, @RequestHeader("Authorization") String token) {
-        return taskService.getTaskById(id);
+    @GetMapping("/{taskId}")
+    public ResponseEntity<?> getTaskById(@RequestAttribute("task") Task task) {
+        return taskService.getTaskById(task);
     }
 
     @PostMapping("/{taskId}/priority/change")

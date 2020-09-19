@@ -50,8 +50,8 @@ public class TaskService {
         return ResponseEntity.ok().body(task);
     }
 
-    public ResponseEntity<?> getTaskById(int taskId) {
-        return ResponseEntity.ok().body(taskRepo.findById(taskId));
+    public ResponseEntity<?> getTaskById(Task task) {
+        return ResponseEntity.ok(task);
     }
 
     @Transactional

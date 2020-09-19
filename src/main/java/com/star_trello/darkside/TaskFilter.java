@@ -29,7 +29,8 @@ public class TaskFilter extends OncePerRequestFilter {
 
         String path = request.getServletPath();
         System.out.println(path);
-        if (path.contains("/change")) {
+        if (path.matches("/tasks/\\d+")) {
+            // e.g. path = "/tasks/1/priority/change" - split by "/" = ["", "tasks", "1", "priority", "change"]
             int taskId = Integer.parseInt(path.split("/")[2]);
             if (!taskRepo.existsById(taskId)) {
                 response.sendError(HttpStatus.NOT_FOUND.value());
@@ -37,7 +38,6 @@ public class TaskFilter extends OncePerRequestFilter {
             Task task = taskRepo.getById(taskId);
             request.setAttribute("task", task);
         }
-
 
         filterChain.doFilter(request, response);
     }
