@@ -49,11 +49,13 @@ class DarkSideApplicationTests {
 
     @Test
     void fullCycleUserAuthCreateQueueTaskCommentCreation() {
-        authController.register(User.builder()
+        User user = User.builder()
                 .email(MAIL)
                 .username(USERNAME)
                 .password(PASSWORD)
-                .build());
+                .build();
+
+        authController.register(user);
 
         ResponseEntity<?> login = authController.login(UserCredentialsDto.builder()
                 .email(MAIL)
@@ -67,8 +69,8 @@ class DarkSideApplicationTests {
                 new QueueCreationDto(QUEUE_TITLE, QUEUE_DESCRIPTION), token)
                 .getBody();
 
-        Task task = (Task) taskController.createTask(
-                new TaskCreationDto(TASK_TITLE, TASK_DESCRIPTION, 5, queue.getTitle(),  null, new ArrayList<>()), token)
+        Task task = (Task) taskController.createTask(user,
+                new TaskCreationDto(TASK_TITLE, TASK_DESCRIPTION, 5, queue.getTitle(),  null, new ArrayList<>()))
                 .getBody();
 
         // update queue

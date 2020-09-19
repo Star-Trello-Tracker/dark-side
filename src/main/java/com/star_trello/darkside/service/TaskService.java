@@ -1,8 +1,8 @@
 package com.star_trello.darkside.service;
 
 import com.star_trello.darkside.dto.TaskCreationDto;
-import com.star_trello.darkside.model.*;
 import com.star_trello.darkside.model.Queue;
+import com.star_trello.darkside.model.*;
 import com.star_trello.darkside.repo.QueueRepo;
 import com.star_trello.darkside.repo.TaskRepo;
 import com.star_trello.darkside.repo.UserSessionRepo;
@@ -35,23 +35,13 @@ public class TaskService {
     NotificationService notificationService;
 
     @Transactional
-    public ResponseEntity<?> getAllTasks(String token) {
-        User creator = userSessionService.getUserByToken(token);
-        if (creator == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
-
+    public ResponseEntity<?> getAllTasks() {
         return ResponseEntity.ok(taskRepo.findAll());
     }
 
     @Transactional
-    public ResponseEntity<?> createTask(String token, TaskCreationDto request) {
+    public ResponseEntity<?> createTask(User creator, TaskCreationDto request) {
         List<String> observers = request.getObservers();
-
-        User creator = userSessionService.getUserByToken(token);
-        if (creator == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
         observers.add(creator.getUsername());
 
         if (!queueRepo.existsByTitle(request.getQueueTitle())) {
@@ -100,11 +90,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> getTaskByKey(String token, String key) {
-        if (!userSessionRepo.existsByToken(token)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
-
+    public ResponseEntity<?> getTaskByKey(String key) {
         Task task = taskRepo.getByKey(key);
         if (task == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + key + " doesn't exist.");
@@ -113,11 +99,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskPriority(String token, int taskId, int priorityCode) {
-        User initiator = userSessionService.getUserByToken(token);
-        if (initiator == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
+    public ResponseEntity<?> changeTaskPriority(User initiator, int taskId, int priorityCode) {
         if (!taskRepo.existsById(taskId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
         }
@@ -133,11 +115,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskStatus(String token, int taskId, int statusCode) {
-        User initiator = userSessionService.getUserByToken(token);
-        if (initiator == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
+    public ResponseEntity<?> changeTaskStatus(User initiator, int taskId, int statusCode) {
         if (!taskRepo.existsById(taskId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
         }
@@ -153,8 +131,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskTitle(String token, int taskId, String title) {
-        User initiator = userSessionService.getUserByToken(token);
+    public ResponseEntity<?> changeTaskTitle(User initiator, int taskId, String title) {
         if (initiator == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
         }
@@ -173,11 +150,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskDescription(String token, int taskId, String description) {
-        User initiator = userSessionService.getUserByToken(token);
-        if (initiator == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
+    public ResponseEntity<?> changeTaskDescription(User initiator, int taskId, String description) {
         if (!taskRepo.existsById(taskId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
         }

@@ -2,6 +2,8 @@ package com.star_trello.darkside.controller;
 
 import com.star_trello.darkside.dto.CodeDto;
 import com.star_trello.darkside.dto.TaskCreationDto;
+import com.star_trello.darkside.dto.TextDto;
+import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,52 +16,53 @@ public class TaskController {
     TaskService taskService;
 
     @PostMapping("")
-    public ResponseEntity<?> createTask(@RequestBody TaskCreationDto request, @RequestHeader("Authorization") String token) {
-        return taskService.createTask(token, request);
+    public ResponseEntity<?> createTask(@RequestAttribute("user") User user,
+                                        @RequestBody TaskCreationDto request) {
+        return taskService.createTask(user, request);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllTasks(@RequestHeader("Authorization") String token) {
-        return taskService.getAllTasks(token);
+    public ResponseEntity<?> getAllTasks() {
+        return taskService.getAllTasks();
     }
 
     @GetMapping("/{key}")
-    public ResponseEntity<?> getTaskByKey(@PathVariable String key, @RequestHeader("Authorization") String token) {
-        return taskService.getTaskByKey(token, key);
+    public ResponseEntity<?> getTaskByKey(@PathVariable String key) {
+        return taskService.getTaskByKey(key);
     }
 
     @PostMapping("/{taskId}/priority/change")
-    public ResponseEntity<?> changeTaskPriority(@PathVariable int taskId,
-                                                @RequestBody CodeDto priorityCode,
-                                                @RequestHeader("Authorization") String token) {
-        return taskService.changeTaskPriority(token, taskId, priorityCode.getCode());
+    public ResponseEntity<?> changeTaskPriority(@RequestAttribute("user") User user,
+                                                @PathVariable int taskId,
+                                                @RequestBody CodeDto priorityCode) {
+        return taskService.changeTaskPriority(user, taskId, priorityCode.getCode());
     }
 
     @PostMapping("/{taskId}/status/change")
-    public ResponseEntity<?> changeTaskStatus(@PathVariable int taskId,
-                                                @RequestBody CodeDto statusCode,
-                                                @RequestHeader("Authorization") String token) {
-        return taskService.changeTaskStatus(token, taskId, statusCode.getCode());
+    public ResponseEntity<?> changeTaskStatus(@RequestAttribute("user") User user,
+                                              @PathVariable int taskId,
+                                              @RequestBody CodeDto statusCode) {
+        return taskService.changeTaskStatus(user, taskId, statusCode.getCode());
     }
 
     @PostMapping("/{taskId}/title/change")
-    public ResponseEntity<?> changeTaskTitle(@PathVariable int taskId,
-                                              @RequestBody String title,
-                                              @RequestHeader("Authorization") String token) {
-        return taskService.changeTaskTitle(token, taskId, title);
+    public ResponseEntity<?> changeTaskTitle(@RequestAttribute("user") User user,
+                                             @PathVariable int taskId,
+                                             @RequestBody TextDto textDto) {
+        return taskService.changeTaskTitle(user, taskId, textDto.getText());
     }
 
     @PostMapping("/{taskId}/description/change")
-    public ResponseEntity<?> changeTaskDescription(@PathVariable int taskId,
-                                              @RequestBody String description,
-                                              @RequestHeader("Authorization") String token) {
-        return taskService.changeTaskDescription(token, taskId, description);
+    public ResponseEntity<?> changeTaskDescription(@RequestAttribute("user") User user,
+                                                   @PathVariable int taskId,
+                                                   @RequestBody TextDto textDto) {
+        return taskService.changeTaskDescription(user, taskId, textDto.getText());
     }
 
     @PostMapping("/{taskId}/assign")
     public ResponseEntity<?> assignUser(@PathVariable int taskId,
-                                                   @RequestBody String username,
-                                                   @RequestHeader("Authorization") String token) {
+                                        @RequestBody String username,
+                                        @RequestHeader("Authorization") String token) {
         return taskService.assignUser(token, taskId, username);
     }
 
