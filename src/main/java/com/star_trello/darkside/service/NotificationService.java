@@ -5,14 +5,12 @@ import com.star_trello.darkside.model.NotificationType;
 import com.star_trello.darkside.model.Task;
 import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.repo.NotificationRepo;
-import com.star_trello.darkside.repo.UserSessionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -37,11 +35,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public ResponseEntity<?> getNotificationsForUser(String token) {
-        User creator = userSessionService.getUserByToken(token);
-        if (creator == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
+    public ResponseEntity<?> getNotificationsForUser(User creator) {
         return ResponseEntity.ok(notificationRepo.getAllByCalledUser(creator));
     }
 

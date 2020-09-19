@@ -65,8 +65,8 @@ class DarkSideApplicationTests {
         UserSession userSessionBody = (UserSession) login.getBody();
         String token = userSessionBody.getToken();
 
-        Queue queue = (Queue) queueController.createQueue(
-                new QueueCreationDto(QUEUE_TITLE, QUEUE_DESCRIPTION), token)
+        Queue queue = (Queue) queueController.createQueue(user,
+                new QueueCreationDto(QUEUE_TITLE, QUEUE_DESCRIPTION))
                 .getBody();
 
         Task task = (Task) taskController.createTask(user,
