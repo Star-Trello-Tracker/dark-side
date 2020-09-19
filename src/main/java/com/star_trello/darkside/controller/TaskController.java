@@ -3,6 +3,7 @@ package com.star_trello.darkside.controller;
 import com.star_trello.darkside.dto.CodeDto;
 import com.star_trello.darkside.dto.TaskCreationDto;
 import com.star_trello.darkside.dto.TextDto;
+import com.star_trello.darkside.model.Task;
 import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,42 +34,42 @@ public class TaskController {
 
     @PostMapping("/{taskId}/priority/change")
     public ResponseEntity<?> changeTaskPriority(@RequestAttribute("user") User user,
-                                                @PathVariable int taskId,
+                                                @RequestAttribute("task") Task task,
                                                 @RequestBody CodeDto priorityCode) {
-        return taskService.changeTaskPriority(user, taskId, priorityCode.getCode());
+        return taskService.changeTaskPriority(user, task, priorityCode.getCode());
     }
 
     @PostMapping("/{taskId}/status/change")
     public ResponseEntity<?> changeTaskStatus(@RequestAttribute("user") User user,
-                                              @PathVariable int taskId,
+                                              @RequestAttribute("task") Task task,
                                               @RequestBody CodeDto statusCode) {
-        return taskService.changeTaskStatus(user, taskId, statusCode.getCode());
+        return taskService.changeTaskStatus(user, task, statusCode.getCode());
     }
 
     @PostMapping("/{taskId}/title/change")
     public ResponseEntity<?> changeTaskTitle(@RequestAttribute("user") User user,
-                                             @PathVariable int taskId,
+                                             @RequestAttribute("task") Task task,
                                              @RequestBody TextDto textDto) {
-        return taskService.changeTaskTitle(user, taskId, textDto.getText());
+        return taskService.changeTaskTitle(user, task, textDto.getText());
     }
 
     @PostMapping("/{taskId}/description/change")
     public ResponseEntity<?> changeTaskDescription(@RequestAttribute("user") User user,
-                                                   @PathVariable int taskId,
+                                                   @RequestAttribute("task") Task task,
                                                    @RequestBody TextDto textDto) {
-        return taskService.changeTaskDescription(user, taskId, textDto.getText());
+        return taskService.changeTaskDescription(user, task, textDto.getText());
     }
 
     @PostMapping("/{taskId}/assign")
     public ResponseEntity<?> assignUser(@RequestAttribute("user") User user,
-                                        @PathVariable int taskId,
-                                        @RequestBody String username) {
-        return taskService.assignUser(user, taskId, username);
+                                        @RequestAttribute("task") Task task,
+                                        @RequestBody TextDto textDto) {
+        return taskService.assignUser(user, task, textDto.getText());
     }
 
     @PostMapping("/{taskId}/observe")
     public ResponseEntity<?> setObserver(@RequestAttribute("user") User user,
-                                         @PathVariable int taskId) {
-        return taskService.setObserver(user, taskId);
+                                         @RequestAttribute("task") Task task) {
+        return taskService.setObserver(user, task);
     }
 }

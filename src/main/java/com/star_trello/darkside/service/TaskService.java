@@ -99,11 +99,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskPriority(User initiator, int taskId, int priorityCode) {
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
-        }
-        Task task = taskRepo.getById(taskId);
+    public ResponseEntity<?> changeTaskPriority(User initiator, Task task, int priorityCode) {
         if (!task.getCreator().equals(initiator) && !initiator.equals(task.getAssignee())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
@@ -115,11 +111,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskStatus(User initiator, int taskId, int statusCode) {
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
-        }
-        Task task = taskRepo.getById(taskId);
+    public ResponseEntity<?> changeTaskStatus(User initiator, Task task, int statusCode) {
         if (!task.getCreator().equals(initiator) && !initiator.equals(task.getAssignee())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
@@ -131,14 +123,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskTitle(User initiator, int taskId, String title) {
-        if (initiator == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
-        }
-        Task task = taskRepo.getById(taskId);
+    public ResponseEntity<?> changeTaskTitle(User initiator, Task task, String title) {
         if (!task.getCreator().equals(initiator) && !initiator.equals(task.getAssignee())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
@@ -150,11 +135,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> changeTaskDescription(User initiator, int taskId, String description) {
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
-        }
-        Task task = taskRepo.getById(taskId);
+    public ResponseEntity<?> changeTaskDescription(User initiator, Task task, String description) {
         if (!task.getCreator().equals(initiator) && !initiator.equals(task.getAssignee())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
@@ -166,19 +147,13 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> assignUser(User initiator, int taskId, String username) {
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
-        }
-
-        Task task = taskRepo.getById(taskId);
-
+    public ResponseEntity<?> assignUser(User initiator, Task task, String username) {
         User assignee = userService.getUserByUsername(username);
         if (assignee == null) {
             task.setAssignee(null);
             return ResponseEntity.ok().build();
         }
-        if (!(task.getCreator().equals(initiator)||initiator.equals(assignee))) {
+        if (!(task.getCreator().equals(initiator) || initiator.equals(assignee))) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Assign is forbidden for this user.");
         }
         task.setAssignee(assignee);
@@ -195,17 +170,9 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> setObserver(User initiator, int taskId) {
-        if (!taskRepo.existsById(taskId)) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
-        }
-
-        Task task = taskRepo.getById(taskId);
-
+    public ResponseEntity<?> setObserver(User initiator, Task task) {
         task.getObservers().add(initiator);
-
         taskRepo.save(task);
-
         return ResponseEntity.ok().build();
     }
 }

@@ -88,6 +88,32 @@ class DarkSideApplicationTests {
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(EDIT_COMMENT, queue.getTaskList().get(0).getComments().get(0).getText());
 
+        taskController.changeTaskPriority(user, task, new CodeDto(4));
+        queue = queueRepo.getByTitle(queue.getTitle());
+        Assert.assertEquals(TaskPriority.BLOCKER, queue.getTaskList().get(0).getPriority());
+
+        User userForAssigning = getUserForAssigning();
+        taskController.assignUser(user, task, new TextDto(userForAssigning.getUsername()));
+        queue = queueRepo.getByTitle(queue.getTitle());
+        Assert.assertEquals(userForAssigning, queue.getTaskList().get(0).getAssignee());
+        Assert.assertTrue(queue.getTaskList().get(0).getObservers().contains(user));
+        Assert.assertTrue(queue.getTaskList().get(0).getObservers().contains(userForAssigning));
+    }
+
+    private User getUserForAssigning() {
+        User user = User.builder()
+                .email(ASSIGNEE_MAIL)
+                .username(ASSIGNEE_USERNAME)
+                .password(ASSIGNEE_PASSWORD)
+                .build();
+
+        authController.register(user);
+        authController.login(UserCredentialsDto.builder()
+                .email(ASSIGNEE_MAIL)
+                .password(ASSIGNEE_PASSWORD)
+                .build());
+
+        return user;
     }
 
 }
