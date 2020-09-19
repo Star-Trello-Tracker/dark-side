@@ -2,6 +2,7 @@ package com.star_trello.darkside.service;
 
 import com.star_trello.darkside.dto.TaskCreationDto;
 import com.star_trello.darkside.model.*;
+import com.star_trello.darkside.model.Queue;
 import com.star_trello.darkside.repo.QueueRepo;
 import com.star_trello.darkside.repo.TaskRepo;
 import com.star_trello.darkside.repo.UserSessionRepo;
@@ -11,9 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class TaskService {
@@ -36,16 +35,35 @@ public class TaskService {
     NotificationService notificationService;
 
     @Transactional
-    public ResponseEntity<?> createTask(String token, TaskCreationDto request) {
+    public ResponseEntity<?> getAllTasks(String token) {
         User creator = userSessionService.getUserByToken(token);
         if (creator == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
         }
+
+        return ResponseEntity.ok(taskRepo.findAll());
+    }
+
+    @Transactional
+    public ResponseEntity<?> createTask(String token, TaskCreationDto request) {
+        List<String> observers = request.getObservers();
+
+        User creator = userSessionService.getUserByToken(token);
+        if (creator == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
+        }
+        observers.add(creator.getUsername());
+
         if (!queueRepo.existsByTitle(request.getQueueTitle())) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(request.getQueueTitle() + " queue doesn't exist.");
         }
         User assignee = userService.getUserByUsername(request.getAssignee());
-        List<User> observersList = getObserversList(request.getObservers());
+
+        if (assignee != null) {
+            observers.add(assignee.getUsername());
+        }
+
+        Set<User> observersList = getObserversList(observers);
         Queue queue = queueRepo.getByTitle(request.getQueueTitle());
         String key = queue.getTitle() + "-" + (queue.getTaskList().size() + 1);
         Task task = Task.builder()
@@ -58,7 +76,7 @@ public class TaskService {
                 .priority(TaskPriority.findPriorityByCode(request.getPriorityCode()))
                 .status(TaskStatus.OPEN)
                 .comments(new ArrayList<>())
-                .calledUsers(new ArrayList<>())
+                .calledUsers(new HashSet<>())
                 .refreshed(System.currentTimeMillis())
                 .build();
 
@@ -69,16 +87,16 @@ public class TaskService {
     }
 
     @Transactional
-    public List<User> getObserversList(String[] usernames) {
-        List<User> list = new ArrayList<>();
+    public Set<User> getObserversList(List<String> usernames) {
+        Set<User> set = new HashSet<>();
         for (String username : usernames) {
             User observer = userService.getUserByUsername(username);
             if (observer != null) {
-                list.add(observer);
+                set.add(observer);
             }
         }
 
-        return list;
+        return set;
     }
 
     @Transactional
@@ -104,7 +122,7 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
         }
         Task task = taskRepo.getById(taskId);
-        if (!task.getCreator().equals(initiator)) {
+        if (!task.getCreator().equals(initiator) && !initiator.equals(task.getAssignee())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setPriority(TaskPriority.findPriorityByCode(priorityCode));
@@ -124,7 +142,7 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
         }
         Task task = taskRepo.getById(taskId);
-        if (!task.getCreator().equals(initiator)) {
+        if (!task.getCreator().equals(initiator) && !initiator.equals(task.getAssignee())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setStatus(TaskStatus.findStatusByCode(statusCode));
@@ -144,7 +162,7 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
         }
         Task task = taskRepo.getById(taskId);
-        if (!task.getCreator().equals(initiator)) {
+        if (!task.getCreator().equals(initiator) && !initiator.equals(task.getAssignee())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setTitle(title);
@@ -164,7 +182,7 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
         }
         Task task = taskRepo.getById(taskId);
-        if (!task.getCreator().equals(initiator)) {
+        if (!task.getCreator().equals(initiator) && !initiator.equals(task.getAssignee())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setDescription(description);
@@ -197,7 +215,12 @@ public class TaskService {
         task.setAssignee(assignee);
         task.getObservers().add(assignee);
         task.setRefreshed(System.currentTimeMillis());
-        notificationService.createNotification(task, Arrays.asList(assignee), initiator, NotificationType.ASSIGNED_TO_TASK);
+        notificationService.createNotification(
+                task,
+                new HashSet<>(Collections.singletonList(assignee)),
+                initiator,
+                NotificationType.ASSIGNED_TO_TASK
+        );
         taskRepo.save(task);
         return ResponseEntity.ok().build();
     }
@@ -215,9 +238,7 @@ public class TaskService {
 
         Task task = taskRepo.getById(taskId);
 
-        if (!task.getObservers().contains(initiator)) {
-            task.getObservers().add(initiator);
-        }
+        task.getObservers().add(initiator);
 
         taskRepo.save(task);
 

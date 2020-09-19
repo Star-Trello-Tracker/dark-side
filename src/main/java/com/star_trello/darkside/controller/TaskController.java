@@ -18,6 +18,11 @@ public class TaskController {
         return taskService.createTask(token, request);
     }
 
+    @GetMapping("/all")
+    public ResponseEntity<?> getAllTasks(@RequestHeader("Authorization") String token) {
+        return taskService.getAllTasks(token);
+    }
+
     @GetMapping("/{key}")
     public ResponseEntity<?> getTaskByKey(@PathVariable String key, @RequestHeader("Authorization") String token) {
         return taskService.getTaskByKey(token, key);
