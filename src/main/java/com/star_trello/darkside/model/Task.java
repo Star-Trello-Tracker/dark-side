@@ -28,7 +28,7 @@ public class Task {
     private User creator;
     @ManyToOne
     private User assignee;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<User> observers;
     @ManyToMany
     private Set<User> calledUsers;

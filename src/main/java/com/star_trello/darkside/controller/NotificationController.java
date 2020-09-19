@@ -1,5 +1,6 @@
 package com.star_trello.darkside.controller;
 
+import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,13 +13,13 @@ public class NotificationController {
     NotificationService notificationService;
 
     @GetMapping("")
-    public ResponseEntity<?> getAllNotificationsForUser(@RequestHeader("Authorization") String token) {
-        return notificationService.getNotificationsForUser(token);
+    public ResponseEntity<?> getAllNotificationsForUser(@RequestAttribute("user") User user) {
+        return notificationService.getNotificationsForUser(user);
     }
 
     @PostMapping("/delete/{notificationId}")
-    public ResponseEntity<?> deleteNotification(@RequestHeader("Authorization") String token,
+    public ResponseEntity<?> deleteNotification(@RequestAttribute("user") User user,
                                                 @PathVariable int notificationId) {
-        return notificationService.deleteNotification(token, notificationId);
+        return notificationService.deleteNotification(user, notificationId);
     }
 }

@@ -49,11 +49,13 @@ class DarkSideApplicationTests {
 
     @Test
     void fullCycleUserAuthCreateQueueTaskCommentCreation() {
-        authController.register(User.builder()
+        User user = User.builder()
                 .email(MAIL)
                 .username(USERNAME)
                 .password(PASSWORD)
-                .build());
+                .build();
+
+        authController.register(user);
 
         ResponseEntity<?> login = authController.login(UserCredentialsDto.builder()
                 .email(MAIL)
@@ -63,29 +65,56 @@ class DarkSideApplicationTests {
         UserSession userSessionBody = (UserSession) login.getBody();
         String token = userSessionBody.getToken();
 
-        Queue queue = (Queue) queueController.createQueue(
-                new QueueCreationDto(QUEUE_TITLE, QUEUE_DESCRIPTION), token)
+        Queue queue = (Queue) queueController.createQueue(user,
+                new QueueCreationDto(QUEUE_TITLE, QUEUE_DESCRIPTION))
                 .getBody();
 
-        Task task = (Task) taskController.createTask(
-                new TaskCreationDto(TASK_TITLE, TASK_DESCRIPTION, 5, queue.getTitle(),  null, new ArrayList<>()), token)
+        Task task = (Task) taskController.createTask(user,
+                new TaskCreationDto(TASK_TITLE, TASK_DESCRIPTION, 5, queue.getTitle(),  null, new ArrayList<>()))
                 .getBody();
 
         // update queue
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(task.getKey(), queue.getTaskList().get(0).getKey());
 
-        Comment comment = (Comment) commentController.createComment(
-                new CommentCreationDto(task.getKey(), COMMENT_TEXT, new ArrayList<>()), token)
+        Comment comment = (Comment) commentController.createComment(user,
+                new CommentCreationDto(task.getKey(), COMMENT_TEXT, new ArrayList<>()))
                 .getBody();
 
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(COMMENT_TEXT, queue.getTaskList().get(0).getComments().get(0).getText());
 
-        commentController.editComment(comment.getId(), new TextDto(EDIT_COMMENT), token);
+        commentController.editComment(user, comment.getId(),
+                new CommentCreationDto(task.getKey(), EDIT_COMMENT, new ArrayList<>()));
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(EDIT_COMMENT, queue.getTaskList().get(0).getComments().get(0).getText());
 
+        taskController.changeTaskPriority(user, task, new CodeDto(4));
+        queue = queueRepo.getByTitle(queue.getTitle());
+        Assert.assertEquals(TaskPriority.BLOCKER, queue.getTaskList().get(0).getPriority());
+
+        User userForAssigning = getUserForAssigning();
+        taskController.assignUser(user, task, new TextDto(userForAssigning.getUsername()));
+        queue = queueRepo.getByTitle(queue.getTitle());
+        Assert.assertEquals(userForAssigning, queue.getTaskList().get(0).getAssignee());
+        Assert.assertTrue(queue.getTaskList().get(0).getObservers().contains(user));
+        Assert.assertTrue(queue.getTaskList().get(0).getObservers().contains(userForAssigning));
+    }
+
+    private User getUserForAssigning() {
+        User user = User.builder()
+                .email(ASSIGNEE_MAIL)
+                .username(ASSIGNEE_USERNAME)
+                .password(ASSIGNEE_PASSWORD)
+                .build();
+
+        authController.register(user);
+        authController.login(UserCredentialsDto.builder()
+                .email(ASSIGNEE_MAIL)
+                .password(ASSIGNEE_PASSWORD)
+                .build());
+
+        return user;
     }
 
 }

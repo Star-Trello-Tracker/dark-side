@@ -34,21 +34,13 @@ public class CommentService {
     UserSessionService userSessionService;
 
     @Transactional
-    public ResponseEntity<?> create(String token, CommentCreationDto request) {
-        String taskKey = request.getTaskKey();
-        User creator = userSessionService.getUserByToken(token);
-        Task task = taskRepo.getTaskByKey(taskKey);
-
-        if (creator == null) {
-            return ResponseEntity.status(401).build();
-        }
+    public ResponseEntity<?> create(User creator, CommentCreationDto request) {
+        Task task = taskRepo.getByKey(request.getTaskKey());
         if (task == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with key " + taskKey + " doesn't exist.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + request.getTaskKey() + " doesn't exist.");
         }
 
-        List<User> whoCalledUsers = request.getWhoCalled().stream()
-                .map(userRepo::getUserByUsername)
-                .collect(Collectors.toList());
+        List<User> whoCalledUsers = whoCalledUsersMapping(request);
 
         Comment comment = Comment.builder()
                 .creator(creator)
@@ -66,18 +58,15 @@ public class CommentService {
     }
 
     @Transactional
-    public ResponseEntity<?> edit(String token, int commentId, String text) {
-        User creator = userSessionService.getUserByToken(token);
-        if (creator == null) {
-            return ResponseEntity.status(401).build();
-        }
-
+    public ResponseEntity<?> edit(User creator, int commentId, CommentCreationDto request) {
         Comment comment = commentRepo.getById(commentId);
         if ((comment != null) && (!comment.getCreator().equals(creator))) {
             return ResponseEntity.badRequest().body("Comment doesn't exist or it is not your comment");
         }
 
-        comment.setText(text);
+        List<User> whoCalledUsers = whoCalledUsersMapping(request);
+        comment.setText(request.getComment());
+        comment.setWhoCalled(whoCalledUsers);
         commentRepo.save(comment);
 
         return ResponseEntity.ok(comment);
@@ -97,5 +86,11 @@ public class CommentService {
 
         commentRepo.delete(comment);
         return ResponseEntity.status(204).build();
+    }
+
+    private List<User> whoCalledUsersMapping(CommentCreationDto request) {
+        return request.getWhoCalled().stream()
+                .map(userRepo::getUserByUsername)
+                .collect(Collectors.toList());
     }
 }

@@ -1,6 +1,7 @@
 package com.star_trello.darkside.controller;
 
 import com.star_trello.darkside.dto.QueueCreationDto;
+import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.service.QueueService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,28 +14,29 @@ public class QueueController {
     QueueService queueService;
 
     @GetMapping("")
-    public ResponseEntity<?> getAllQueues(@RequestHeader("Authorization") String token) {
-        return queueService.getAllQueues(token);
+    public ResponseEntity<?> getAllQueues() {
+        return queueService.getAllQueues();
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createQueue(@RequestBody QueueCreationDto request, @RequestHeader("Authorization") String token) {
-        return queueService.createQueue(token, request);
+    public ResponseEntity<?> createQueue(@RequestAttribute("user") User user,
+                                         @RequestBody QueueCreationDto request) {
+        return queueService.createQueue(user, request);
     }
 
     @GetMapping("/titles")
-    public ResponseEntity<?> getQueuesTitles(@RequestHeader("Authorization") String token) {
-        return queueService.getAllQueueTitles(token);
+    public ResponseEntity<?> getQueuesTitles() {
+        return queueService.getAllQueueTitles();
     }
 
     @GetMapping("/{title}")
-    public ResponseEntity<?> getQueueByTitle(@RequestHeader("Authorization") String token, @PathVariable String title) {
-        return queueService.getQueueByTitle(token, title.toUpperCase());
+    public ResponseEntity<?> getQueueByTitle(@PathVariable String title) {
+        return queueService.getQueueByTitle(title.toUpperCase());
     }
 
     @GetMapping("/{title}/tasks")
-    public ResponseEntity<?> getQueueTasks(@RequestHeader("Authorization") String token, @PathVariable String title) {
-        return queueService.getQueueTasks(token, title.toUpperCase());
+    public ResponseEntity<?> getQueueTasks(@PathVariable String title) {
+        return queueService.getQueueTasks(title.toUpperCase());
     }
 
 }
