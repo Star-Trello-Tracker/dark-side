@@ -2,6 +2,7 @@ package com.star_trello.darkside.controller;
 
 import com.star_trello.darkside.dto.CommentCreationDto;
 import com.star_trello.darkside.dto.TextDto;
+import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +16,16 @@ public class CommentController {
     CommentService commentService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createComment(@RequestBody CommentCreationDto request, @RequestHeader("Authorization") String token) {
-        return commentService.create(token, request);
+    public ResponseEntity<?> createComment(@RequestAttribute("user") User user,
+                                           @RequestBody CommentCreationDto request) {
+        return commentService.create(user, request);
     }
 
     @PostMapping("/edit/{commentId}")
-    public ResponseEntity<?> editComment(@PathVariable int commentId,
-                                         @RequestBody TextDto textDto,
-                                         @RequestHeader("Authorization") String token) {
-        return commentService.edit(token, commentId, textDto.getText());
+    public ResponseEntity<?> editComment(@RequestAttribute("user") User user,
+                                         @PathVariable int commentId,
+                                         @RequestBody TextDto textDto) {
+        return commentService.edit(user, commentId, textDto.getText());
     }
 
 //    @DeleteMapping("/delete/{commentId}")

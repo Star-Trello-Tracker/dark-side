@@ -77,14 +77,14 @@ class DarkSideApplicationTests {
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(task.getKey(), queue.getTaskList().get(0).getKey());
 
-        Comment comment = (Comment) commentController.createComment(
-                new CommentCreationDto(task.getKey(), COMMENT_TEXT, new ArrayList<>()), token)
+        Comment comment = (Comment) commentController.createComment(user,
+                new CommentCreationDto(task.getKey(), COMMENT_TEXT, new ArrayList<>()))
                 .getBody();
 
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(COMMENT_TEXT, queue.getTaskList().get(0).getComments().get(0).getText());
 
-        commentController.editComment(comment.getId(), new TextDto(EDIT_COMMENT), token);
+        commentController.editComment(user, comment.getId(), new TextDto(EDIT_COMMENT));
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(EDIT_COMMENT, queue.getTaskList().get(0).getComments().get(0).getText());
 
