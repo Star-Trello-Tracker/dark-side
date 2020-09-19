@@ -18,8 +18,8 @@ public class NotificationController {
     }
 
     @PostMapping("/delete/{notificationId}")
-    public ResponseEntity<?> deleteNotification(@RequestHeader("Authorization") String token,
+    public ResponseEntity<?> deleteNotification(@RequestAttribute("user") User user,
                                                 @PathVariable int notificationId) {
-        return notificationService.deleteNotification(token, notificationId);
+        return notificationService.deleteNotification(user, notificationId);
     }
 }

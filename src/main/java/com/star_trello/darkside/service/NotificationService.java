@@ -40,11 +40,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteNotification(String token, int notificationId) {
-        User calledUser = userSessionService.getUserByToken(token);
-        if (calledUser == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
+    public ResponseEntity<?> deleteNotification(User calledUser, int notificationId) {
         if (!notificationRepo.existsById(notificationId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body("Notification with id " + notificationId + " doesn't exist.");
