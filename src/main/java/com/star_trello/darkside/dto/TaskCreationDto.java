@@ -3,6 +3,8 @@ package com.star_trello.darkside.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+
 @AllArgsConstructor
 @Getter
 public class TaskCreationDto {
@@ -11,5 +13,5 @@ public class TaskCreationDto {
     private int priorityCode;
     private String queueTitle;
     private String assignee;
-    private String[] observers;
+    private List<String> observers;
 }

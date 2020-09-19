@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -28,9 +29,9 @@ public class Task {
     @ManyToOne
     private User assignee;
     @ManyToMany
-    private List<User> observers;
+    private Set<User> observers;
     @ManyToMany
-    private List<User> calledUsers;
+    private Set<User> calledUsers;
 
     @OneToMany(fetch = FetchType.EAGER)
     private List<Comment> comments;
