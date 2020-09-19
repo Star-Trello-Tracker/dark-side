@@ -10,4 +10,6 @@ public class TaskCreationDto {
     private String description;
     private int priorityCode;
     private String queueTitle;
+    private String assignee;
+    private String[] observers;
 }

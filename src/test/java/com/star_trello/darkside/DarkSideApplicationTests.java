@@ -68,7 +68,7 @@ class DarkSideApplicationTests {
                 .getBody();
 
         Task task = (Task) taskController.createTask(
-                new TaskCreationDto(TASK_TITLE, TASK_DESCRIPTION, 5, queue.getTitle()), token)
+                new TaskCreationDto(TASK_TITLE, TASK_DESCRIPTION, 5, queue.getTitle(),  null, new String[] {}), token)
                 .getBody();
 
         // update queue

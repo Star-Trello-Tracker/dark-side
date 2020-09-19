@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 public interface UserRepo extends JpaRepository<User, Integer> {
     boolean existsUserByEmailOrUsername(String email, String username);
 
+    boolean existsByUsername(String username);
+
     User getUserIdByEmail(String email);
 
     User getUserById(int id);
