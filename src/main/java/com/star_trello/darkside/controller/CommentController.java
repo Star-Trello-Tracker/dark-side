@@ -27,8 +27,9 @@ public class CommentController {
         return commentService.edit(user, commentId, request);
     }
 
-//    @DeleteMapping("/delete/{commentId}")
-//    public ResponseEntity<?> deleteComment(@PathVariable int commentId, @RequestHeader("Authorization") String token) {
-//        return commentService.delete(token, commentId);
-//    }
+    @PostMapping("/{commentId}/delete")
+    public ResponseEntity<?> deleteComment(@RequestAttribute("user") User user,
+                                           @PathVariable int commentId) {
+        return commentService.delete(user, commentId);
+    }
 }
