@@ -86,7 +86,8 @@ public class TaskService {
                     task,
                     new HashSet<>(Collections.singletonList(assignee)),
                     creator,
-                    NotificationType.ASSIGNED_TO_TASK
+                    NotificationType.ASSIGNED_TO_TASK,
+                    ""
             );
         }
 
@@ -94,7 +95,8 @@ public class TaskService {
                 task,
                 observersList,
                 creator,
-                NotificationType.ADDED_TO_OBSERVERS
+                NotificationType.ADDED_TO_OBSERVERS,
+                ""
         );
 
         return ResponseEntity.ok().body(task);
@@ -199,7 +201,8 @@ public class TaskService {
                 task,
                 new HashSet<>(Collections.singletonList(assignee)),
                 initiator,
-                NotificationType.ASSIGNED_TO_TASK
+                NotificationType.ASSIGNED_TO_TASK,
+                ""
         );
         taskRepo.save(task);
         return ResponseEntity.ok().build();
@@ -218,7 +221,8 @@ public class TaskService {
                 task,
                 task.getObservers(),
                 initiator,
-                type
+                type,
+                ""
         );
 
         Comment autoComment = commentService.createAutomaticComment(initiator, task, type, value);
