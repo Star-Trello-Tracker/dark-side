@@ -28,7 +28,6 @@ public class TaskFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getServletPath();
-        System.out.println(path);
         if (path.matches("/tasks/\\d+/.*")) {
             // e.g. path = "/tasks/1/priority/change" - split by "/" = ["", "tasks", "1", "priority", "change"]
             int taskId = Integer.parseInt(path.split("/")[2]);

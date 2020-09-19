@@ -28,7 +28,6 @@ public class AuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getServletPath();
-        System.out.println(path);
         if (!path.equals("/register") && !path.equals("/login")) {
             String token = request.getHeader("Authorization");
             if (!userSessionRepo.existsByToken(token)) {
