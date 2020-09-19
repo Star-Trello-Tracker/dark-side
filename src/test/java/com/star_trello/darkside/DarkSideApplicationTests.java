@@ -89,6 +89,10 @@ class DarkSideApplicationTests {
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(EDIT_COMMENT, queue.getTaskList().get(0).getComments().get(0).getText());
 
+        commentController.deleteComment(user, comment.getId());
+        queue = queueRepo.getByTitle(queue.getTitle());
+        Assert.assertEquals(0, queue.getTaskList().get(0).getComments().size());
+
         taskController.changeTaskPriority(user, task, new CodeDto(4));
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(TaskPriority.BLOCKER, queue.getTaskList().get(0).getPriority());

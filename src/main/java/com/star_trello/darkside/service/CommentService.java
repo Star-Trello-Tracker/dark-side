@@ -45,7 +45,7 @@ public class CommentService {
         Comment comment = Comment.builder()
                 .creator(creator)
                 .text(request.getComment())
-                .task(task)
+                .taskId(task.getId())
                 .whoCalled(whoCalledUsers)
                 .created(System.currentTimeMillis())
                 .build();
@@ -73,18 +73,17 @@ public class CommentService {
     }
 
     @Transactional
-    public ResponseEntity<?> delete(String token, int commentId) {
-        User creator = userSessionService.getUserByToken(token);
-        if (creator == null) {
-            return ResponseEntity.status(401).build();
-        }
-
+    public ResponseEntity<?> delete(User creator, int commentId) {
         Comment comment = commentRepo.getById(commentId);
         if ((comment != null) && (!comment.getCreator().equals(creator))) {
             return ResponseEntity.badRequest().body("Comment doesn't exist or it is not your comment");
         }
 
+        Task task = taskRepo.getById(comment.getTaskId());
+        task.getComments().remove(comment);
+        taskRepo.save(task);
         commentRepo.delete(comment);
+
         return ResponseEntity.status(204).build();
     }
 

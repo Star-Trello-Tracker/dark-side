@@ -26,6 +26,5 @@ public class Comment {
 
     private long created;
 
-    @ManyToOne
-    private Task task;
+    private int taskId;
 }
