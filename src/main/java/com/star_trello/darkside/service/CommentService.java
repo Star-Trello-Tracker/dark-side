@@ -40,9 +40,7 @@ public class CommentService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + request.getTaskKey() + " doesn't exist.");
         }
 
-        List<User> whoCalledUsers = request.getWhoCalled().stream()
-                .map(userRepo::getUserByUsername)
-                .collect(Collectors.toList());
+        List<User> whoCalledUsers = whoCalledUsersMapping(request);
 
         Comment comment = Comment.builder()
                 .creator(creator)
@@ -60,13 +58,15 @@ public class CommentService {
     }
 
     @Transactional
-    public ResponseEntity<?> edit(User creator, int commentId, String text) {
+    public ResponseEntity<?> edit(User creator, int commentId, CommentCreationDto request) {
         Comment comment = commentRepo.getById(commentId);
         if ((comment != null) && (!comment.getCreator().equals(creator))) {
             return ResponseEntity.badRequest().body("Comment doesn't exist or it is not your comment");
         }
 
-        comment.setText(text);
+        List<User> whoCalledUsers = whoCalledUsersMapping(request);
+        comment.setText(request.getComment());
+        comment.setWhoCalled(whoCalledUsers);
         commentRepo.save(comment);
 
         return ResponseEntity.ok(comment);
@@ -86,5 +86,11 @@ public class CommentService {
 
         commentRepo.delete(comment);
         return ResponseEntity.status(204).build();
+    }
+
+    private List<User> whoCalledUsersMapping(CommentCreationDto request) {
+        return request.getWhoCalled().stream()
+                .map(userRepo::getUserByUsername)
+                .collect(Collectors.toList());
     }
 }
