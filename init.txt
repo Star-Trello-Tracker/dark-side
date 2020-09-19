@@ -4,6 +4,7 @@ curl --location --request POST 'http://localhost:8080/api/register' \
 --header 'Content-Type: application/json' \
 --data-raw '{
  "email":"1",
+ "username":"1",
  "password":"1"
 }'
 
