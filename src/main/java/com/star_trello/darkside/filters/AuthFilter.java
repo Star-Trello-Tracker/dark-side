@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class SimpleFilter extends OncePerRequestFilter {
+public class AuthFilter extends OncePerRequestFilter {
 
     @Autowired
     UserSessionRepo userSessionRepo;

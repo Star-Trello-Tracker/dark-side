@@ -166,11 +166,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> assignUser(String token, int taskId, String username) {
-        User initiator = userSessionService.getUserByToken(token);
-        if (initiator == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
+    public ResponseEntity<?> assignUser(User initiator, int taskId, String username) {
         if (!taskRepo.existsById(taskId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
         }
@@ -199,12 +195,7 @@ public class TaskService {
     }
 
     @Transactional
-    public ResponseEntity<?> setObserver(String token, int taskId) {
-        User initiator = userSessionService.getUserByToken(token);
-        if (initiator == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token is invalid");
-        }
-
+    public ResponseEntity<?> setObserver(User initiator, int taskId) {
         if (!taskRepo.existsById(taskId)) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Task with id " + taskId + " doesn't exist.");
         }

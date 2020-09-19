@@ -60,16 +60,15 @@ public class TaskController {
     }
 
     @PostMapping("/{taskId}/assign")
-    public ResponseEntity<?> assignUser(@PathVariable int taskId,
-                                        @RequestBody String username,
-                                        @RequestHeader("Authorization") String token) {
-        return taskService.assignUser(token, taskId, username);
+    public ResponseEntity<?> assignUser(@RequestAttribute("user") User user,
+                                        @PathVariable int taskId,
+                                        @RequestBody String username) {
+        return taskService.assignUser(user, taskId, username);
     }
 
     @PostMapping("/{taskId}/observe")
-    public ResponseEntity<?> setObserver(
-            @PathVariable int taskId,
-            @RequestHeader("Authorization") String token) {
-        return taskService.setObserver(token, taskId);
+    public ResponseEntity<?> setObserver(@RequestAttribute("user") User user,
+                                         @PathVariable int taskId) {
+        return taskService.setObserver(user, taskId);
     }
 }

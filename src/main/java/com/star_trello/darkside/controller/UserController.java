@@ -1,6 +1,7 @@
 package com.star_trello.darkside.controller;
 
 import com.star_trello.darkside.dto.EditingProfileDto;
+import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +20,9 @@ public class UserController {
     }
 
     @PostMapping("/edit")
-    public ResponseEntity<?> updateUserProfile(@RequestHeader("Authorization") String token,
+    public ResponseEntity<?> updateUserProfile(@RequestAttribute("user") User user,
                                                @RequestBody EditingProfileDto editingProfile) {
-        return userService.updateUserProfile(token, editingProfile);
+        return userService.updateUserProfile(user, editingProfile);
     }
 
     @GetMapping("/usernames")

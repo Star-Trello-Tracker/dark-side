@@ -31,11 +31,7 @@ public class UserService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateUserProfile(String token, EditingProfileDto editingProfile) {
-        User user = userSessionService.getUserByToken(token);
-        if (user == null) {
-            return ResponseEntity.status(401).build();
-        }
+    public ResponseEntity<?> updateUserProfile(User user, EditingProfileDto editingProfile) {
         user.setName(editingProfile.getName());
         user.setSurname(editingProfile.getSurname());
         user.setTgUsername(editingProfile.getTgUsername());
