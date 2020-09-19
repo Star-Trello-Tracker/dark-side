@@ -18,9 +18,9 @@ public class TaskController {
         return taskService.createTask(token, request);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getTaskById(@PathVariable int id, @RequestHeader("Authorization") String token) {
-        return taskService.getTaskById(token, id);
+    @GetMapping("/{key}")
+    public ResponseEntity<?> getTaskByKey(@PathVariable String key, @RequestHeader("Authorization") String token) {
+        return taskService.getTaskByKey(token, key);
     }
 
     @PostMapping("/{taskId}/priority/change")
@@ -37,6 +37,13 @@ public class TaskController {
         return taskService.changeTaskStatus(token, taskId, statusCode.getCode());
     }
 
+    @PostMapping("/{taskId}/title/change")
+    public ResponseEntity<?> changeTaskTitle(@PathVariable int taskId,
+                                              @RequestBody String title,
+                                              @RequestHeader("Authorization") String token) {
+        return taskService.changeTaskTitle(token, taskId, title);
+    }
+
     @PostMapping("/{taskId}/description/change")
     public ResponseEntity<?> changeTaskDescription(@PathVariable int taskId,
                                               @RequestBody String description,
@@ -49,5 +56,12 @@ public class TaskController {
                                                    @RequestBody String username,
                                                    @RequestHeader("Authorization") String token) {
         return taskService.assignUser(token, taskId, username);
+    }
+
+    @PostMapping("/{taskId}/observe")
+    public ResponseEntity<?> setObserver(
+            @PathVariable int taskId,
+            @RequestHeader("Authorization") String token) {
+        return taskService.setObserver(token, taskId);
     }
 }

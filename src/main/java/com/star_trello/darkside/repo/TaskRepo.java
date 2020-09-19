@@ -9,4 +9,6 @@ public interface TaskRepo extends JpaRepository<Task, Integer> {
     Task getTaskByKey(String key);
 
     boolean existsByKey(String key);
+
+    Task getByKey(String key);
 }

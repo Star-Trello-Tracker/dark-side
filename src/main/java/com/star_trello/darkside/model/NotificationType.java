@@ -5,7 +5,8 @@ public enum NotificationType {
     TASK_PRIORITY_UPDATED(2),
     TASK_STATUS_UPDATED(3),
     TASK_DESCRIPTION_UPDATED(4),
-    ASSIGNED_TO_TASK(5);
+    ASSIGNED_TO_TASK(5),
+    TASK_TITLE_UPDATED(6);
 
     private int dbCode;
 

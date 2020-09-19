@@ -47,7 +47,21 @@ public class UserService {
     }
 
     @Transactional
+    public User getUserByUsername(String username) {
+        if (!this.userRepo.existsByUsername(username)) {
+            return null;
+        }
+
+        return this.userRepo.getUserByUsername(username);
+    }
+
+    @Transactional
     public ResponseEntity<?> getAllUsernames() {
         return ResponseEntity.ok(userRepo.getAllUsernames());
+    }
+
+    @Transactional
+    public ResponseEntity<?> getAllNamesAndUsernames() {
+        return ResponseEntity.ok(userRepo.getAllNamesAndUsernames());
     }
 }

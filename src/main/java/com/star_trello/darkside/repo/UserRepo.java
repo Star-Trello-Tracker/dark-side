@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 public interface UserRepo extends JpaRepository<User, Integer> {
     boolean existsUserByEmailOrUsername(String email, String username);
 
+    boolean existsByUsername(String username);
+
     User getUserIdByEmail(String email);
 
     User getUserById(int id);
@@ -22,4 +24,11 @@ public interface UserRepo extends JpaRepository<User, Integer> {
     }
 
     User getUserByUsername(String username);
+
+    default List<String[]> getAllNamesAndUsernames() {
+        return findAll().stream().map(user -> new String[]{ user.getUsername(),
+                user.getName(),
+                user.getSurname()
+        }).collect(Collectors.toList());
+    }
 }
