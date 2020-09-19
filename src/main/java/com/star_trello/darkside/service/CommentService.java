@@ -53,6 +53,7 @@ public class CommentService {
         commentRepo.save(comment);
         commentRepo.flush();
         task.getComments().add(comment);
+        task.getCalledUsers().addAll(whoCalledUsers);
         taskRepo.save(task);
 
         return ResponseEntity.ok(comment);

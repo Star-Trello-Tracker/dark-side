@@ -32,6 +32,10 @@ public class QueueService {
 
     @Transactional
     public ResponseEntity<?> createQueue(User creator, QueueCreationDto request) {
+        if (queueRepo.existsByTitle(request.getTitle())) {
+            return ResponseEntity.badRequest().build();
+        }
+
         Queue queue = Queue.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
