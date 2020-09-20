@@ -30,13 +30,13 @@ public class AuthFilter extends OncePerRequestFilter {
         String path = request.getServletPath();
         if (!path.equals("/register") && !path.equals("/login")) {
             String token = request.getHeader("Authorization");
-            if (!userSessionRepo.existsByToken(token)) {
-                response.sendError(401);
-            }
             User user = userSessionService.getUserByToken(token);
+            if (user == null) {
+                response.sendError(401);
+                return;
+            }
             request.setAttribute("user", user);
         }
-
 
         filterChain.doFilter(request, response);
     }
