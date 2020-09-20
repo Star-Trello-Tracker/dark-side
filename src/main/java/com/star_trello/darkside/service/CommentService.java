@@ -83,12 +83,10 @@ public class CommentService {
         return ResponseEntity.ok(comment);
     }
 
-    @Transactional
-    public Comment createAutomaticComment(User creator, Task task, Map<NotificationType, String> type) {
+    public Comment createAutomaticComment(User creator, Task task, NotificationType type, String value) {
         return Comment.builder()
                 .creator(creator)
-                .creator(creator)
-                .text(autoCommentsService.getAutoCommentText(type))
+                .text(autoCommentsService.getAutoCommentText(type, value))
                 .taskId(task.getId())
                 .whoCalled(new ArrayList<>())
                 .created(System.currentTimeMillis())

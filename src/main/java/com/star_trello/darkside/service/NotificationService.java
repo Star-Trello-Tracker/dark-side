@@ -23,17 +23,16 @@ public class NotificationService {
     @Transactional
     public void createNotification(Task task, Set<User> willBeNotified, User initiator, NotificationType type) {
         for (User user : willBeNotified) {
-            if (initiator.equals(user)) {
-                continue;
+            if (!initiator.equals(user)) {
+                Notification notification = Notification
+                        .builder()
+                        .calledUser(user)
+                        .initiator(initiator)
+                        .task(task)
+                        .type(type)
+                        .build();
+                notificationRepo.save(notification);;
             }
-            Notification notification = Notification
-                    .builder()
-                    .calledUser(user)
-                    .initiator(initiator)
-                    .task(task)
-                    .type(type)
-                    .build();
-            notificationRepo.save(notification);
         }
     }
 

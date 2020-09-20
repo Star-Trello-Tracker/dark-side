@@ -41,21 +41,18 @@ public class AutoCommentsService {
             .toMap(data -> (NotificationType) data[0], data -> (List<String>) data[1])
     );
 
-    public String getAutoCommentText(Map<NotificationType, String> type) {
-        NotificationType typeMessage = (NotificationType) type.keySet().toArray()[0];
-        List<String> messages = this.autoCommentsTextMap.get(typeMessage);
+    public String getAutoCommentText(NotificationType type, String value) {
+        List<String> messages = this.autoCommentsTextMap.get(type);
 
-        String value = type.get(typeMessage);
-
-        if (typeMessage.equals(NotificationType.TASK_STATUS_UPDATED)) {
+        if (type.equals(NotificationType.TASK_STATUS_UPDATED)) {
             return messages.get(Integer.parseInt(value) - 1);
         }
 
-        if (typeMessage.equals(NotificationType.TASK_PRIORITY_UPDATED)) {
+        if (type.equals(NotificationType.TASK_PRIORITY_UPDATED)) {
             return messages.get(0) + this.priorities[Integer.parseInt(value) - 1];
         }
 
-        if (typeMessage.equals(NotificationType.TASK_TITLE_UPDATED)) {
+        if (type.equals(NotificationType.TASK_TITLE_UPDATED)) {
             return messages.get(0) + " \"" + value + "";
         }
 

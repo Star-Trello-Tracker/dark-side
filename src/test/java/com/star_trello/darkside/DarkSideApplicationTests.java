@@ -98,6 +98,10 @@ class DarkSideApplicationTests {
         Assert.assertEquals(TaskPriority.BLOCKER, queue.getTaskList().get(0).getPriority());
 
         User userForAssigning = getUserForAssigning();
+
+        // after changing task priority, in task will add new auto comment
+        // => we need to update current task
+        task = queue.getTaskList().get(0);
         taskController.assignUser(user, task, new TextDto(userForAssigning.getUsername()));
         queue = queueRepo.getByTitle(queue.getTitle());
         Assert.assertEquals(userForAssigning, queue.getTaskList().get(0).getAssignee());

@@ -131,9 +131,8 @@ public class TaskService {
         changeTaskCommonLogic(
                 initiator,
                 task,
-                Collections.singletonMap(
-                        NotificationType.TASK_PRIORITY_UPDATED,
-                        Integer.toString(priorityCode))
+                NotificationType.TASK_PRIORITY_UPDATED,
+                Integer.toString(priorityCode)
         );
         return ResponseEntity.ok().build();
     }
@@ -147,9 +146,8 @@ public class TaskService {
         changeTaskCommonLogic(
                 initiator,
                 task,
-                Collections.singletonMap(
-                        NotificationType.TASK_STATUS_UPDATED,
-                        Integer.toString(statusCode))
+                NotificationType.TASK_STATUS_UPDATED,
+                Integer.toString(statusCode)
         );
         return ResponseEntity.ok().build();
     }
@@ -163,9 +161,8 @@ public class TaskService {
         changeTaskCommonLogic(
                 initiator,
                 task,
-                Collections.singletonMap(
-                        NotificationType.TASK_TITLE_UPDATED,
-                        title)
+                NotificationType.TASK_TITLE_UPDATED,
+                title
         );
         return ResponseEntity.ok().build();
     }
@@ -179,8 +176,8 @@ public class TaskService {
         changeTaskCommonLogic(
                 initiator,
                 task,
-                Collections.singletonMap(NotificationType.TASK_DESCRIPTION_UPDATED,
-                        description)
+                NotificationType.TASK_DESCRIPTION_UPDATED,
+                description
         );
         return ResponseEntity.ok().build();
     }
@@ -215,17 +212,16 @@ public class TaskService {
         return ResponseEntity.ok().build();
     }
 
-    private void changeTaskCommonLogic(User initiator, Task task, Map<NotificationType, String> type) {
+    private void changeTaskCommonLogic(User initiator, Task task, NotificationType type, String value) {
         task.setRefreshed(System.currentTimeMillis());
         notificationService.createNotification(
                 task,
                 task.getObservers(),
                 initiator,
-                // Ну я же знаю, что он закастится
-                (NotificationType) type.keySet().toArray()[0]
+                type
         );
 
-        Comment autoComment = commentService.createAutomaticComment(initiator, task, type);
+        Comment autoComment = commentService.createAutomaticComment(initiator, task, type, value);
         commentRepo.save(autoComment);
         commentRepo.flush();
 
