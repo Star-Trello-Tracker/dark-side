@@ -73,6 +73,23 @@ public class TaskService {
         queue.getTaskList().add(task);
         taskRepo.save(task);
         queueRepo.save(queue);
+
+        if (assignee != null) {
+            notificationService.createNotification(
+                    task,
+                    new HashSet<>(Collections.singletonList(assignee)),
+                    creator,
+                    NotificationType.ASSIGNED_TO_TASK
+            );
+        }
+
+        notificationService.createNotification(
+                task,
+                observersList,
+                creator,
+                NotificationType.ADDED_TO_OBSERVERS
+        );
+
         return ResponseEntity.ok().body(task);
     }
 

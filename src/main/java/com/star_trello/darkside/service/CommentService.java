@@ -2,6 +2,7 @@ package com.star_trello.darkside.service;
 
 import com.star_trello.darkside.dto.CommentCreationDto;
 import com.star_trello.darkside.model.Comment;
+import com.star_trello.darkside.model.NotificationType;
 import com.star_trello.darkside.model.Task;
 import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.repo.CommentRepo;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +34,9 @@ public class CommentService {
 
     @Autowired
     UserSessionService userSessionService;
+
+    @Autowired
+    NotificationService notificationService;
 
     @Transactional
     public ResponseEntity<?> create(User creator, CommentCreationDto request) {
@@ -55,6 +60,20 @@ public class CommentService {
         task.getComments().add(comment);
         task.getCalledUsers().addAll(whoCalledUsers);
         taskRepo.save(task);
+
+        notificationService.createNotification(
+                task,
+                task.getObservers(),
+                creator,
+                NotificationType.ADDED_COMMENT_IN_TASK
+        );
+
+        notificationService.createNotification(
+                task,
+                new HashSet<>(whoCalledUsers),
+                creator,
+                NotificationType.CALLED_IN_COMMENT
+        );
 
         return ResponseEntity.ok(comment);
     }
