@@ -39,6 +39,12 @@
             <version>4.9.1</version>
         </dependency>
         <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-spring-boot-starter</artifactId>
+            <version>4.1.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
@@ -77,6 +83,17 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>com.heroku.sdk</groupId>
+                <artifactId>heroku-maven-plugin</artifactId>
+                <version>2.0.16</version>
+                <configuration>
+                    <processTypes>
+                        <web>java $JAVA_OPTS -Dserver.port=$PORT -cp target/classes:target/dependency/* com.star_trello.darkside.DarkSideApplication</web>
+                    </processTypes>
+                </configuration>
             </plugin>
 
             <plugin>
