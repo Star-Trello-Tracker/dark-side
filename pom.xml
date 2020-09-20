@@ -86,7 +86,7 @@
                     <assembleDirectory>target</assembleDirectory>
                     <programs>
                         <program>
-                            <mainClass>com.star_trello.darkside.telegram_bot.bot.DarkSideApplication</mainClass>
+                            <mainClass>com.star_trello.darkside.DarkSideApplication</mainClass>
                             <name>workerBot</name>
                         </program>
                     </programs>
