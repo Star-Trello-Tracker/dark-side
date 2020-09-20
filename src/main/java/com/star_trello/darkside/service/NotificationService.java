@@ -5,6 +5,8 @@ import com.star_trello.darkside.model.NotificationType;
 import com.star_trello.darkside.model.Task;
 import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.repo.NotificationRepo;
+import com.star_trello.darkside.telegram_bot.bot.TelegramBot;
+import com.star_trello.darkside.telegram_bot.utils.TextUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,9 +21,11 @@ public class NotificationService {
     NotificationRepo notificationRepo;
     @Autowired
     UserSessionService userSessionService;
+    @Autowired
+    TelegramBot bot;
 
     @Transactional
-    public void createNotification(Task task, Set<User> willBeNotified, User initiator, NotificationType type) {
+    public void createNotification(Task task, Set<User> willBeNotified, User initiator, NotificationType type, String commentText) {
         for (User user : willBeNotified) {
             if (!initiator.equals(user)) {
                 Notification notification = Notification
@@ -31,10 +35,13 @@ public class NotificationService {
                         .task(task)
                         .type(type)
                         .build();
-                notificationRepo.save(notification);;
+                notificationRepo.save(notification);
+                bot.sendNotification(notification, TextUtils.hideMentionsFromText(commentText));
             }
         }
+
     }
+
 
     @Transactional
     public ResponseEntity<?> getNotificationsForUser(User creator) {

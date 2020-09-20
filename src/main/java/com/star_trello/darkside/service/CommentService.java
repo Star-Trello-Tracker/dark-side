@@ -70,14 +70,16 @@ public class CommentService {
                 task,
                 task.getObservers(),
                 creator,
-                NotificationType.ADDED_COMMENT_IN_TASK
+                NotificationType.ADDED_COMMENT_IN_TASK,
+                comment.getText()
         );
 
         notificationService.createNotification(
                 task,
                 new HashSet<>(whoCalledUsers),
                 creator,
-                NotificationType.CALLED_IN_COMMENT
+                NotificationType.CALLED_IN_COMMENT,
+                comment.getText()
         );
 
         return ResponseEntity.ok(comment);

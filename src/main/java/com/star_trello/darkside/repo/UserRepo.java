@@ -31,4 +31,6 @@ public interface UserRepo extends JpaRepository<User, Integer> {
                 user.getSurname()
         }).collect(Collectors.toList());
     }
+    boolean existsByTgUsername(String tgUsername);
+    User getByTgUsername(String tgUsername);
 }

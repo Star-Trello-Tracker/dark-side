@@ -21,7 +21,7 @@ public class Comment {
 
     private String text;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<User> whoCalled;
 
     private long created;
