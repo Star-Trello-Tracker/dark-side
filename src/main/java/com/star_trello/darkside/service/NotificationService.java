@@ -23,14 +23,16 @@ public class NotificationService {
     @Transactional
     public void createNotification(Task task, Set<User> willBeNotified, User initiator, NotificationType type) {
         for (User user : willBeNotified) {
-            Notification notification = Notification
-                    .builder()
-                    .calledUser(user)
-                    .initiator(initiator)
-                    .task(task)
-                    .type(type)
-                    .build();
-            notificationRepo.save(notification);
+            if (!initiator.equals(user)) {
+                Notification notification = Notification
+                        .builder()
+                        .calledUser(user)
+                        .initiator(initiator)
+                        .task(task)
+                        .type(type)
+                        .build();
+                notificationRepo.save(notification);;
+            }
         }
     }
 
@@ -51,6 +53,6 @@ public class NotificationService {
                     .body("User doesn't have rights to delete this notification.");
         }
         notificationRepo.delete(notification);
-        return ResponseEntity.ok("Notification deleted successfully");
+        return ResponseEntity.ok().build();
     }
 }

@@ -2,6 +2,7 @@ package com.star_trello.darkside.service;
 
 import com.star_trello.darkside.dto.CommentCreationDto;
 import com.star_trello.darkside.model.Comment;
+import com.star_trello.darkside.model.NotificationType;
 import com.star_trello.darkside.model.Task;
 import com.star_trello.darkside.model.User;
 import com.star_trello.darkside.repo.CommentRepo;
@@ -13,7 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +36,12 @@ public class CommentService {
 
     @Autowired
     UserSessionService userSessionService;
+
+    @Autowired
+    NotificationService notificationService;
+
+    @Autowired
+    AutoCommentsService autoCommentsService;
 
     @Transactional
     public ResponseEntity<?> create(User creator, CommentCreationDto request) {
@@ -56,7 +66,32 @@ public class CommentService {
         task.getCalledUsers().addAll(whoCalledUsers);
         taskRepo.save(task);
 
+        notificationService.createNotification(
+                task,
+                task.getObservers(),
+                creator,
+                NotificationType.ADDED_COMMENT_IN_TASK
+        );
+
+        notificationService.createNotification(
+                task,
+                new HashSet<>(whoCalledUsers),
+                creator,
+                NotificationType.CALLED_IN_COMMENT
+        );
+
         return ResponseEntity.ok(comment);
+    }
+
+    public Comment createAutomaticComment(User creator, Task task, NotificationType type, String value) {
+        return Comment.builder()
+                .creator(creator)
+                .text(autoCommentsService.getAutoCommentText(type, value))
+                .taskId(task.getId())
+                .whoCalled(new ArrayList<>())
+                .created(System.currentTimeMillis())
+                .isAutoComment(true)
+                .build();
     }
 
     @Transactional
