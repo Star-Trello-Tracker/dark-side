@@ -31,10 +31,11 @@ public class TaskFilter extends OncePerRequestFilter {
         if (path.matches("/tasks/\\d+/.*")) {
             // e.g. path = "/tasks/1/priority/change" - split by "/" = ["", "tasks", "1", "priority", "change"]
             int taskId = Integer.parseInt(path.split("/")[2]);
-            if (!taskRepo.existsById(taskId)) {
-                response.sendError(HttpStatus.NOT_FOUND.value());
-            }
             Task task = taskRepo.getById(taskId);
+            if (task == null) {
+                response.sendError(HttpStatus.NOT_FOUND.value());
+                return;
+            }
             request.setAttribute("task", task);
         }
 
