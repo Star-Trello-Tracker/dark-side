@@ -14,8 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +39,9 @@ public class CommentService {
 
     @Autowired
     NotificationService notificationService;
+
+    @Autowired
+    AutoCommentsService autoCommentsService;
 
     @Transactional
     public ResponseEntity<?> create(User creator, CommentCreationDto request) {
@@ -76,6 +81,19 @@ public class CommentService {
         );
 
         return ResponseEntity.ok(comment);
+    }
+
+    @Transactional
+    public Comment createAutomaticComment(User creator, Task task, Map<NotificationType, String> type) {
+        return Comment.builder()
+                .creator(creator)
+                .creator(creator)
+                .text(autoCommentsService.getAutoCommentText(type))
+                .taskId(task.getId())
+                .whoCalled(new ArrayList<>())
+                .created(System.currentTimeMillis())
+                .isAutoComment(true)
+                .build();
     }
 
     @Transactional

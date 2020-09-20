@@ -3,6 +3,7 @@ package com.star_trello.darkside.service;
 import com.star_trello.darkside.dto.TaskCreationDto;
 import com.star_trello.darkside.model.Queue;
 import com.star_trello.darkside.model.*;
+import com.star_trello.darkside.repo.CommentRepo;
 import com.star_trello.darkside.repo.QueueRepo;
 import com.star_trello.darkside.repo.TaskRepo;
 import com.star_trello.darkside.repo.UserSessionRepo;
@@ -23,6 +24,9 @@ public class TaskService {
     QueueRepo queueRepo;
 
     @Autowired
+    CommentRepo commentRepo;
+
+    @Autowired
     UserSessionService userSessionService;
 
     @Autowired
@@ -33,6 +37,9 @@ public class TaskService {
 
     @Autowired
     NotificationService notificationService;
+
+    @Autowired
+    CommentService commentService;
 
     @Transactional
     public ResponseEntity<?> getAllTasks() {
@@ -121,7 +128,13 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setPriority(TaskPriority.findPriorityByCode(priorityCode));
-        changeTaskCommonLogic(initiator, task, NotificationType.TASK_PRIORITY_UPDATED);
+        changeTaskCommonLogic(
+                initiator,
+                task,
+                Collections.singletonMap(
+                        NotificationType.TASK_PRIORITY_UPDATED,
+                        Integer.toString(priorityCode))
+        );
         return ResponseEntity.ok().build();
     }
 
@@ -131,7 +144,13 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setStatus(TaskStatus.findStatusByCode(statusCode));
-        changeTaskCommonLogic(initiator, task, NotificationType.TASK_STATUS_UPDATED);
+        changeTaskCommonLogic(
+                initiator,
+                task,
+                Collections.singletonMap(
+                        NotificationType.TASK_STATUS_UPDATED,
+                        Integer.toString(statusCode))
+        );
         return ResponseEntity.ok().build();
     }
 
@@ -141,7 +160,13 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setTitle(title);
-        changeTaskCommonLogic(initiator, task, NotificationType.TASK_TITLE_UPDATED);
+        changeTaskCommonLogic(
+                initiator,
+                task,
+                Collections.singletonMap(
+                        NotificationType.TASK_TITLE_UPDATED,
+                        title)
+        );
         return ResponseEntity.ok().build();
     }
 
@@ -151,7 +176,12 @@ public class TaskService {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Task update is forbidden for this user.");
         }
         task.setDescription(description);
-        changeTaskCommonLogic(initiator, task, NotificationType.TASK_DESCRIPTION_UPDATED);
+        changeTaskCommonLogic(
+                initiator,
+                task,
+                Collections.singletonMap(NotificationType.TASK_DESCRIPTION_UPDATED,
+                        description)
+        );
         return ResponseEntity.ok().build();
     }
 
@@ -185,9 +215,21 @@ public class TaskService {
         return ResponseEntity.ok().build();
     }
 
-    private void changeTaskCommonLogic(User initiator, Task task, NotificationType type) {
+    private void changeTaskCommonLogic(User initiator, Task task, Map<NotificationType, String> type) {
         task.setRefreshed(System.currentTimeMillis());
-        notificationService.createNotification(task, task.getObservers(), initiator, type);
+        notificationService.createNotification(
+                task,
+                task.getObservers(),
+                initiator,
+                // Ну я же знаю, что он закастится
+                (NotificationType) type.keySet().toArray()[0]
+        );
+
+        Comment autoComment = commentService.createAutomaticComment(initiator, task, type);
+        commentRepo.save(autoComment);
+        commentRepo.flush();
+
+        task.getComments().add(autoComment);
         taskRepo.save(task);
     }
 }

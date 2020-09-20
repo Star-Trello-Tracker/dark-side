@@ -1,5 +1,8 @@
 package com.star_trello.darkside.model;
 
+import lombok.Getter;
+
+@Getter
 public enum NotificationType {
     CALLED_IN_COMMENT(1),
     TASK_PRIORITY_UPDATED(2),

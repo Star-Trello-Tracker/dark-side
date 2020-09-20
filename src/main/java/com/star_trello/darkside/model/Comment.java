@@ -27,4 +27,7 @@ public class Comment {
     private long created;
 
     private int taskId;
+
+    @Column(columnDefinition = "boolean default false")
+    private boolean isAutoComment;
 }
