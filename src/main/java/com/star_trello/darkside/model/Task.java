@@ -37,4 +37,8 @@ public class Task {
     private List<Comment> comments;
 
     private long refreshed;
+
+    private String boardName;
+
+    private int boardId;
 }
